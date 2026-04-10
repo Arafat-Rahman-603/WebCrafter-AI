@@ -5,10 +5,10 @@ import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
 
 const navLinks = [
-  { name: "Home", href: "#" },
-  { name: "Features", href: "#" },
-  { name: "About", href: "#" },
-  { name: "Contact", href: "#" },
+  { name: "Home", href: "/" },
+  { name: "Features", href: "/features" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export default function Navber() {

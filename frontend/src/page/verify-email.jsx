@@ -90,7 +90,7 @@ export default function VerifyEmail() {
             </span>
           </div>
 
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent text-center mb-1 mt-3">Check your email</h1>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent text-center mb-1 mt-2">Check your email</h1>
           <p className="text-slate-400 text-sm text-center mb-2">
             {`We've sent a 6-digit code to`}
           </p>

@@ -23,7 +23,11 @@ export default function Login() {
     try {
       await dispatch(loginUser({ email, password })).unwrap();
       router.push("/");
-    } catch (err) {}
+    } catch (err) {
+      if (error == "Please verify your email to log in") {
+        router.push("/verify-email");
+      }
+    }
   };
 
   return (
@@ -124,9 +128,9 @@ export default function Login() {
                 />
                 <span className="text-sm text-slate-400">Remember me</span>
               </label>
-              <a href="#" className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
+              <Link href="/forgot-password" className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             <button

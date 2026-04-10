@@ -27,7 +27,6 @@ export default function Hero() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full pt-12">
         <div className="text-center max-w-4xl mx-auto">
-
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -51,8 +50,17 @@ export default function Hero() {
               <span className="text-white/20">|</span>
               <span className="text-blue-400 flex items-center gap-1 group">
                 Read the announcement
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 group-hover:translate-x-0.5 transition-transform"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </span>
             </div>
@@ -78,7 +86,9 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
             className="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Turn your ideas into production-ready React components instantly. No coding experience needed. Just describe what you want and let AI do the heavy lifting.
+            Turn your ideas into production-ready React components instantly. No
+            coding experience needed. Just describe what you want and let AI do
+            the heavy lifting.
           </motion.p>
 
           {/* CTAs */}
@@ -96,15 +106,31 @@ export default function Hero() {
               }}
             >
               Start building for free
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clipRule="evenodd"
+                />
               </svg>
             </button>
-            <button
-              className="w-full sm:w-auto px-8 py-4 text-slate-300 hover:text-white border border-white/10 hover:border-white/25 hover:bg-white/5 rounded-full font-semibold text-lg transition-all duration-300 active:scale-95 flex items-center justify-center gap-2"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+            <button className="w-full sm:w-auto px-8 py-4 text-slate-300 hover:text-white border border-white/10 hover:border-white/25 hover:bg-white/5 rounded-full font-semibold text-lg transition-all duration-300 active:scale-95 flex items-center justify-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                  clipRule="evenodd"
+                />
               </svg>
               See how it works
             </button>
@@ -116,7 +142,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-          className="mt-20 mx-auto max-w-5xl relative"
+          className="mt-20 mx-auto max-w-5xl hidden sm:block relative"
         >
           {/* Glow Behind Mockup */}
           <div className="absolute inset-0 bg-gradient-to-b from-blue-500/20 to-transparent blur-3xl opacity-60 z-0 rounded-full transform -translate-y-12"></div>
@@ -141,8 +167,17 @@ export default function Hero() {
                 <div className="w-3 h-3 rounded-full bg-[#27c93f]"></div>
               </div>
               <div className="mx-auto rounded-md flex items-center justify-center text-xs font-medium text-slate-500 py-1.5 px-6 md:px-32 xl:px-48 border border-white/5 bg-white/5 hidden sm:flex">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1.5 opacity-50" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3 w-3 mr-1.5 opacity-50"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
                 app.webcrafter.ai
               </div>
@@ -150,7 +185,7 @@ export default function Hero() {
             </div>
 
             {/* Inner Dashboard Mock */}
-            <div className="p-6 md:p-12 aspect-[16/9] md:aspect-[21/9] flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="p-6 md:p-12  aspect-[16/9] md:aspect-[21/9] flex flex-col items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:24px_24px]"></div>
 
               <div className="relative z-10 w-full max-w-2xl flex flex-col items-center">
@@ -164,8 +199,13 @@ export default function Hero() {
                   <span className="text-3xl filter drop-shadow-sm">✨</span>
                 </motion.div>
 
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-tight">What do you want to build?</h3>
-                <p className="text-slate-400 text-sm md:text-base mb-8 text-center max-w-sm">Describe your desired UI component, and our AI will generate it instantly.</p>
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 tracking-tight">
+                  What do you want to build?
+                </h3>
+                <p className="text-slate-400 text-sm md:text-base mb-8 text-center max-w-sm">
+                  Describe your desired UI component, and our AI will generate
+                  it instantly.
+                </p>
 
                 <motion.div
                   initial={{ y: 20, opacity: 0 }}
@@ -182,7 +222,12 @@ export default function Hero() {
                     A modern SaaS pricing table with a dark mode...
                   </div>
                   <div className="bg-blue-600 p-2.5 rounded-full text-white cursor-pointer hover:bg-blue-700 transition-colors shadow-md shadow-blue-500/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 transform -rotate-45" viewBox="0 0 20 20" fill="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 transform -rotate-45"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
                       <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                     </svg>
                   </div>
@@ -205,4 +250,4 @@ export default function Hero() {
       </div>
     </section>
   );
-}
+}  
