@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 
 export default function Hero() {
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden bg-[#0a0f1e] min-h-screen flex flex-col justify-center">
+    <section className="relative pt-20 pb-20 overflow-hidden bg-[#0a0f1e] min-h-screen flex flex-col justify-center">
       {/* Background animated orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
