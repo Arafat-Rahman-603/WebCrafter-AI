@@ -21,7 +21,7 @@ export default function ContactPage() {
   return (
     <>
       <Navber />
-      <div className="min-h-screen bg-[#0a0f1e] pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="min-h-screen bg-[#0a0f1e] pt-12 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Background Gradients */}
         <div className="absolute top-20 right-0 w-[600px] h-[600px] bg-blue-500/10 blur-[150px] rounded-full pointer-events-none" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-600/10 blur-[120px] rounded-full pointer-events-none" />
@@ -35,10 +35,10 @@ export default function ContactPage() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
-              Let's Start a <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">Conversation</span>
+             {" Let's Start a"} <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-violet-400">Conversation</span>
             </h1>
             <p className="text-lg text-slate-400 mb-10">
-              Have questions about WebCrafter AI? Whether it's about pricing, features, or enterprise solutions, our team is ready to assist you.
+             {" Have questions about WebCrafter AI? Whether it's about pricing, features, or enterprise solutions, our team is ready to assist you."}
             </p>
 
             <div className="space-y-8">
@@ -50,8 +50,10 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold text-lg">Email Us</h3>
-                  <p className="text-slate-400">support@webcrafter.ai</p>
-                  <p className="text-slate-400">sales@webcrafter.ai</p>
+                  <div className="flex flex-col">
+                    <a href="mailto:arafat.rahman.6003@gmail.com" className="text-slate-400 hover:text-blue-400 transition-colors">support@webcrafter.ai</a>
+                    <a href="mailto:arafat.rahman.3006@gmail.com" className="text-slate-400 hover:text-blue-400 transition-colors">sales@webcrafter.ai</a>
+                  </div>
                 </div>
               </div>
 
@@ -64,8 +66,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="text-white font-semibold text-lg">Our HQ</h3>
+                  <p className="text-slate-400">Dhaka, Bangladesh</p>
                   <p className="text-slate-400">123 Innovation Drive</p>
-                  <p className="text-slate-400">San Francisco, CA 94103</p>
                 </div>
               </div>
             </div>
@@ -84,7 +86,7 @@ export default function ContactPage() {
             
             {status === "success" ? (
               <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-center relative z-10">
-                 Thanks for reaching out! We'll get back to you shortly.
+                 {"Thanks for reaching out! We'll get back to you shortly."}
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4 relative z-10">

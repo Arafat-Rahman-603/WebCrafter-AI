@@ -1,15 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-const API_URL = "http://localhost:4000/api/auth";
+const AUTH_URL = "http://localhost:4000/api/auth";
+const USER_URL = "http://localhost:4000/api/user";
 
 export const signupUser = createAsyncThunk(
   'auth/signup',
   async ({ name, email, password }, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/signup`, {
+      const res = await fetch(`${AUTH_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || data.error || "Signup failed");
@@ -24,10 +26,11 @@ export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ email, password }, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/login`, {
+      const res = await fetch(`${AUTH_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || data.error || "Login failed");
@@ -42,10 +45,11 @@ export const verifyEmailUser = createAsyncThunk(
   'auth/verifyEmail',
   async ({ email, code }, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/verify-email`, {
+      const res = await fetch(`${AUTH_URL}/verify-email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || data.error || "Verification failed");
@@ -60,10 +64,11 @@ export const forgotPasswordUser = createAsyncThunk(
   'auth/forgotPassword',
   async ({ email }, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/forgot-password`, {
+      const res = await fetch(`${AUTH_URL}/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || data.error || "Request failed");
@@ -78,13 +83,68 @@ export const resetPasswordUser = createAsyncThunk(
   'auth/resetPassword',
   async ({ token, newPassword }, thunkAPI) => {
     try {
-      const res = await fetch(`${API_URL}/reset-password/${token}`, {
+      const res = await fetch(`${AUTH_URL}/reset-password/${token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newPassword }),
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || data.error || "Reset failed");
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const checkAuthUser = createAsyncThunk(
+  'auth/checkAuth',
+  async (_, thunkAPI) => {
+    try {
+      const res = await fetch(`${AUTH_URL}/check-auth`, {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Auth check failed");
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateProfileUserInfo = createAsyncThunk(
+  'auth/updateProfile',
+  async ({ name, bio }, thunkAPI) => {
+    try {
+      const res = await fetch(`${USER_URL}/update`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, bio }),
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Update failed");
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const uploadAvatarUserInfo = createAsyncThunk(
+  'auth/uploadAvatar',
+  async (formData, thunkAPI) => {
+    try {
+      const res = await fetch(`${USER_URL}/upload-avatar`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Upload failed");
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -97,7 +157,8 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     emailForVerification: null,
-    isLoading: false,
+    isLoading: true, // Start loading as true for initial check
+    isInitialized: false,
     error: null,
   },
   reducers: {
@@ -106,6 +167,9 @@ const authSlice = createSlice({
     },
     setEmailForVerification: (state, action) => {
       state.emailForVerification = action.payload;
+    },
+    logout: (state) => {
+      state.user = null;
     }
   },
   extraReducers: (builder) => {
@@ -164,20 +228,53 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       // Reset Password
-      .addCase(resetPasswordUser.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(resetPasswordUser.fulfilled, (state) => {
-        state.isLoading = false;
-      })
       .addCase(resetPasswordUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Check Auth
+      .addCase(checkAuthUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkAuthUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.user = action.payload.user;
+      })
+      .addCase(checkAuthUser.rejected, (state) => {
+        state.isLoading = false;
+        state.isInitialized = true;
+        state.user = null;
+      })
+      // Update Profile
+      .addCase(updateProfileUserInfo.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateProfileUserInfo.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+      })
+      .addCase(updateProfileUserInfo.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Upload Avatar
+      .addCase(uploadAvatarUserInfo.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(uploadAvatarUserInfo.fulfilled, (state, action) => {
+        state.isLoading = false;
+        if (state.user) {
+          state.user.profilePicture = action.payload.profilePicture;
+        }
+      })
+      .addCase(uploadAvatarUserInfo.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
   }
 });
 
-export const { clearError, setEmailForVerification } = authSlice.actions;
+export const { clearError, setEmailForVerification, logout } = authSlice.actions;
 
 export default authSlice.reducer;

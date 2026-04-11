@@ -47,7 +47,7 @@ export default function FeaturesPage() {
   return (
     <>
       <Navber />
-      <div className="min-h-screen bg-[#0a0f1e] pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="min-h-screen bg-[#0a0f1e] pt-12 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         {/* Background Effects */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
         

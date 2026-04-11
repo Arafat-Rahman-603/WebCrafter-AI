@@ -44,7 +44,14 @@ const userSchema = new mongoose.Schema(
             enum: ["free", "pro", "enterprise"],
             default: "free",
         },
-        
+        profilePicture: {
+            type: String,
+            default: "",
+        },
+        bio: {
+            type: String,
+            default: "",
+        },
     },
     {
         timestamps: true,

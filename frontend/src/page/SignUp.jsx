@@ -12,8 +12,14 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  const { isLoading, error } = useSelector((state) => state.auth);
+  const { isLoading, error, isInitialized, user } = useSelector((state) => state.auth);
   const router = useRouter();
+
+  useEffect(() => {
+    if (isInitialized && user) {
+      router.push("/");
+    }
+  }, [isInitialized, user, router]);
 
   useEffect(() => {
     dispatch(clearError());

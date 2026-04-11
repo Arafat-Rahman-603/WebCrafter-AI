@@ -3,10 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
+import { useSelector } from "react-redux";
 
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "Features", href: "/features" },
+  { name: "Pricing", href: "/pricing" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -14,6 +16,7 @@ const navLinks = [
 export default function Navber() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,6 +27,8 @@ export default function Navber() {
   }, []);
 
   return (
+    <>
+    <div className="h-22 bg-[#0a0f1e]"></div>
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -74,22 +79,38 @@ export default function Navber() {
             </ul>
 
             <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-white/10">
-              <Link
-                href="/login"
-                className="text-[15px] font-medium text-slate-300 hover:text-white px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200"
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="px-5 py-2.5 text-[15px] font-semibold text-white rounded-xl transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center"
-                style={{
-                  background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)",
-                  boxShadow: "0 4px 15px rgba(59,130,246,0.3)",
-                }}
-              >
-                Get Started
-              </Link>
+              {user ? (
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-medium text-white"
+                >
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-xs font-bold uppercase p-[1px]">
+                    <div className="w-full h-full bg-[#0a0f1e] rounded-full flex items-center justify-center">
+                      {user.name ? user.name.charAt(0) : "U"}
+                    </div>
+                  </div>
+                  Profile
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="text-[15px] font-medium text-slate-300 hover:text-white px-4 py-2 rounded-xl hover:bg-white/5 transition-all duration-200"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="px-5 py-2.5 text-[15px] font-semibold text-white rounded-xl transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center"
+                    style={{
+                      background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)",
+                      boxShadow: "0 4px 15px rgba(59,130,246,0.3)",
+                    }}
+                  >
+                    Get Started
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -135,29 +156,47 @@ export default function Navber() {
                 </a>
               ))}
               <div className="mt-4 pt-4 border-t border-white/5 flex flex-col space-y-3 px-2">
-                <Link
-                  href="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full text-center block px-4 py-3 text-base font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full text-center block px-4 py-3 text-base font-semibold text-white rounded-xl transition-all"
-                  style={{
-                    background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)",
-                    boxShadow: "0 4px 15px rgba(59,130,246,0.25)",
-                  }}
-                >
-                  Get Started
-                </Link>
+                {user ? (
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="w-full text-center block px-4 py-3 text-base font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all flex items-center justify-center gap-2"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-xs font-bold uppercase p-[1px]">
+                      <div className="w-full h-full bg-[#0a0f1e] rounded-full flex items-center justify-center">
+                        {user.name ? user.name.charAt(0) : "U"}
+                      </div>
+                    </div>
+                    My Profile
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full text-center block px-4 py-3 text-base font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/signup"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full text-center block px-4 py-3 text-base font-semibold text-white rounded-xl transition-all"
+                      style={{
+                        background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)",
+                        boxShadow: "0 4px 15px rgba(59,130,246,0.25)",
+                      }}
+                    >
+                      Get Started
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </motion.nav>
+    </>
   );
 }
