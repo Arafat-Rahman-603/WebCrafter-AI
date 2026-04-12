@@ -12,7 +12,7 @@ Requirements:
 - Use Tailwind CSS via CDN (<script src="https://cdn.tailwindcss.com"></script>).
 - Include any necessary icons (e.g., FontAwesome or Heroicons via CDN).
 - Include any necessary Google Fonts.
-- Ensure the design is responsive and modern.
+- Ensure the design is responsive and modern
 - Only return the raw HTML code, without any markdown formatting or explanations.`;
 
   const userPrompt = `Create a ${type} with a ${theme} theme. User request: ${prompt}`;
