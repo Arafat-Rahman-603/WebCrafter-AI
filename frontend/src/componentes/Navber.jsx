@@ -80,17 +80,31 @@ export default function Navber() {
 
             <div className="flex items-center space-x-3 ml-6 pl-6 border-l border-white/10">
               {user ? (
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-medium text-white"
-                >
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-xs font-bold uppercase p-[1px]">
-                    <div className="w-full h-full bg-[#0a0f1e] rounded-full flex items-center justify-center">
-                      {user.name ? user.name.charAt(0) : "U"}
+                <>
+                  <Link
+                    href="/dashboard"
+                    className="text-slate-300 hover:text-white font-medium text-sm transition-colors duration-200"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/generate"
+                    className="text-slate-300 hover:text-white font-medium text-sm transition-colors duration-200"
+                  >
+                    Generate
+                  </Link>
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-sm font-medium text-white ml-2"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-xs font-bold uppercase p-[1px]">
+                      <div className="w-full h-full bg-[#0a0f1e] rounded-full flex items-center justify-center">
+                        {user.name ? user.name.charAt(0) : "U"}
+                      </div>
                     </div>
-                  </div>
-                  Profile
-                </Link>
+                    Profile
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link
@@ -157,18 +171,34 @@ export default function Navber() {
               ))}
               <div className="mt-4 pt-4 border-t border-white/5 flex flex-col space-y-3 px-2">
                 {user ? (
-                  <Link
-                    href="/profile"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full text-center block px-4 py-3 text-base font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all flex items-center justify-center gap-2"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-xs font-bold uppercase p-[1px]">
-                      <div className="w-full h-full bg-[#0a0f1e] rounded-full flex items-center justify-center">
-                        {user.name ? user.name.charAt(0) : "U"}
+                  <>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full text-center block px-4 py-3 text-base font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/generate"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full text-center block px-4 py-3 text-base font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                    >
+                      Generate
+                    </Link>
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="w-full text-center block px-4 py-3 text-base font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all flex items-center justify-center gap-2"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-xs font-bold uppercase p-[1px]">
+                        <div className="w-full h-full bg-[#0a0f1e] rounded-full flex items-center justify-center">
+                          {user.name ? user.name.charAt(0) : "U"}
+                        </div>
                       </div>
-                    </div>
-                    My Profile
-                  </Link>
+                      My Profile
+                    </Link>
+                  </>
                 ) : (
                   <>
                     <Link
