@@ -30,7 +30,8 @@ export default function GeneratePage() {
       if (!res.ok) throw new Error(data.message || "Generation failed");
 
       setIsGenerating(false);
-      router.push("/dashboard");
+      // Redirect to the live editor for instant preview
+      router.push(`/editor/${data.website._id}`);
     } catch (err) {
       console.error(err);
       setIsGenerating(false);

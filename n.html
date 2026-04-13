@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="title" content="Dark Modern Landing Page">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dark Modern Landing Page</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Heroicons -->
+    <script src="https://unpkg.com/@heroicons/react@2.0.18/dist/icon.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 antialiased">
+    <header class="bg-gray-800/80 backdrop-blur-sm py-12">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Welcome to the Future</h1>
+            <p class="text-xl text-gray-300 mb-6 max-w-2xl mx-auto">
+                Experience cutting‑edge design paired with powerful functionality. Built for creators who demand performance and style.
+            </p>
+            <a href="#features" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition-transform duration-200 transform hover:scale-105">
+                Get Started
+            </a>
+        </div>
+    </header>
+
+    <section id="features" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Feature 1 -->
+                <div class="bg-gray-800/50 p-6 rounded-lg backdrop-blur-sm hover:bg-gray-800/70 transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-400 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 0a2 2 0 110 4 2 2 0 010-4zm-6 0a2 2 0 100 4 2 2 0 000-4zM3 9h2m8-5a2 2 0 110 4H5a2 2 0 110-4zm0 14a2 2 0 100-4h10a2 2 0 100 4H3z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold">Innovative Design</h3>
+                    </div>
+                    <p class="text-gray-400">
+                        Sleek, dark aesthetics combined with modern UI patterns to captivate your audience.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-gray-800/50 p-6 rounded-lg backdrop-blur-sm hover:bg-gray-800/70 transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-400 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold">Performance Optimized</h3>
+                    </div>
+                    <p class="text-gray-400">
+                        Lightning‑fast load times and smooth interactions keep users engaged.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-gray-800/50 p-6 rounded-lg backdrop-blur-sm hover:bg-gray-800/70 transition duration-300">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-8 h-8 text-indigo-400 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zm0 10c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12a10 10 0 1114.011 4.243M6 22a10 10 0 1014.011-4.243" />
+                        </svg>
+                        <h3 class="text-lg font-semibold">Responsive & Accessible</h3>
+                    </div>
+                    <p class="text-gray-400">
+                        Looks great on every device and meets WCAG accessibility standards.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bg-gray-800/50 backdrop-blur-sm py-16">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">Join thousands of satisfied users</h2>
+            <p class="text-gray-300 max-w-2xl mx-auto mb-8">
+                Our platform empowers creators, developers, and businesses to turn ideas into reality with confidence.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105 flex items-center">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zm0 10c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12a10 10 0 1114.011 4.243M6 22a10 10 0 1014.011-4.243" />
+                    </svg>
+                    Try Free Demo
+                </a>
+                <a href="#" class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 py-6">
+        <div class="container mx-auto px-4 text-center text-sm text-gray-400">
+            &copy; <span id="year"></span> Dark Modern Landing Page. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
