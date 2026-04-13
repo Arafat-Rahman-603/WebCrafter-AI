@@ -23,6 +23,9 @@ const websiteSchema = new mongoose.Schema(
       type: String,
       default: "Untitled Website",
     },
+    thumbnail: {
+      type: String,
+    },
     letestCode: {
       type: String,
       required: true,

@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "../redux/ReduxProvider";
-import Footer from "@/componentes/Footer";
+import FooterWrapper from "@/componentes/FooterWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
             <main className="flex-1 flex flex-col w-full h-full">
               {children}
             </main>
-            <Footer />
+            <FooterWrapper />
           </div>
         </ReduxProvider>
       </body>

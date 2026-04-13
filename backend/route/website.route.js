@@ -7,6 +7,8 @@ import {
   fixWebsite,
   updateWebsiteCode,
   deployWebsite,
+  updateTitle,
+  updateThumbnail,
 } from "../controller/website.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -22,5 +24,7 @@ router.get("/:id", verifyToken, getWebsiteById);
 router.post("/:id/fix", verifyToken, fixWebsite);
 router.patch("/:id/code", verifyToken, updateWebsiteCode);
 router.post("/:id/deploy", verifyToken, deployWebsite);
+router.patch("/:id/title", verifyToken, updateTitle);
+router.patch("/:id/thumbnail", verifyToken, updateThumbnail);
 
 export default router;
