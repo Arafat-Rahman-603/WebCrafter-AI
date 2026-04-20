@@ -16,7 +16,7 @@ export default function Login() {
 
   useEffect(() => {
     if (isInitialized && user) {
-      router.push("/");
+      router.push("/dashboard");
     }
   }, [isInitialized, user, router]);
 
@@ -28,9 +28,10 @@ export default function Login() {
     e.preventDefault();
     try {
       await dispatch(loginUser({ email, password })).unwrap();
-      router.push("/");
+      router.push("/dashboard");
     } catch (err) {
-      if (error == "Please verify your email to log in") {
+      // err is the rejected payload (the error message string)
+      if (err === "Please verify your email to log in") {
         router.push("/verify-email");
       }
     }

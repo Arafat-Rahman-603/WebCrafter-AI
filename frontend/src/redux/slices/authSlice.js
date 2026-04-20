@@ -115,6 +115,21 @@ export const checkAuthUser = createAsyncThunk(
   }
 );
 
+// ── Async logout — clears cookie on backend too ───────────────────────────────
+export const logoutUser = createAsyncThunk(
+  'auth/logout',
+  async (_, thunkAPI) => {
+    try {
+      await fetch(`${AUTH_URL}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {
+      // Even if the network call fails, we still clear local state
+    }
+  }
+);
+
 export const updateProfileUserInfo = createAsyncThunk(
   'auth/updateProfile',
   async ({ name, bio }, thunkAPI) => {
@@ -157,7 +172,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     emailForVerification: null,
-    isLoading: true, // Start loading as true for initial check
+    isLoading: true,
     isInitialized: false,
     error: null,
   },
@@ -168,9 +183,10 @@ const authSlice = createSlice({
     setEmailForVerification: (state, action) => {
       state.emailForVerification = action.payload;
     },
+    // Keep synchronous logout as fallback
     logout: (state) => {
       state.user = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -181,7 +197,6 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Store email temporarily so Verify Email page doesn't need to ask for it again
         state.emailForVerification = action.meta.arg.email;
       })
       .addCase(signupUser.rejected, (state, action) => {
@@ -246,6 +261,15 @@ const authSlice = createSlice({
         state.isInitialized = true;
         state.user = null;
       })
+      // Logout (async — clears cookie)
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.isLoading = false;
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        state.user = null;
+        state.isLoading = false;
+      })
       // Update Profile
       .addCase(updateProfileUserInfo.pending, (state) => {
         state.isLoading = true;
@@ -272,7 +296,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       });
-  }
+  },
 });
 
 export const { clearError, setEmailForVerification, logout } = authSlice.actions;

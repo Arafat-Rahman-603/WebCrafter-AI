@@ -5,7 +5,7 @@ import Navber from "@/componentes/Navber";
 import { motion, AnimatePresence } from "motion/react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
-import { logout, updateProfileUserInfo, uploadAvatarUserInfo } from "@/redux/slices/authSlice";
+import { logoutUser, updateProfileUserInfo, uploadAvatarUserInfo } from "@/redux/slices/authSlice";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,8 +41,8 @@ export default function ProfilePage() {
     }
   }, [user, isInitialized, isEditing, router]);
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
     router.push("/");
   };
 

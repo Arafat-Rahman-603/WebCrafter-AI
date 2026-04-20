@@ -227,6 +227,18 @@ export const updateTitle = async (req, res) => {
   }
 };
 
+// ── Delete a website ──────────────────────────────────────────────────────────
+export const deleteWebsite = async (req, res) => {
+  try {
+    const website = await Website.findOneAndDelete({ _id: req.params.id, user: req.userId });
+    if (!website) return res.status(404).json({ success: false, message: "Website not found" });
+    return res.status(200).json({ success: true, message: "Website deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting website:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // ── Upload & save website thumbnail screenshot ────────────────────────────────
 export const updateThumbnail = async (req, res) => {
   try {

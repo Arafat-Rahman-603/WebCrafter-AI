@@ -1,24 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navber from "@/componentes/Navber";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 
 export default function GeneratePage() {
-  const { user } = useSelector((state) => state.auth);
+  const { user, isInitialized } = useSelector((state) => state.auth);
   const router = useRouter();
 
   const [prompt, setPrompt] = useState("");
   const [theme, setTheme] = useState("Dark & Modern");
   const [websiteType, setWebsiteType] = useState("Landing Page");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState("");
+
+  // Auth guard
+  useEffect(() => {
+    if (isInitialized && !user) {
+      router.push("/login");
+    }
+  }, [isInitialized, user, router]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     setIsGenerating(true);
-    
+    setError("");
+
     try {
       const res = await fetch("http://localhost:4000/api/website/generate", {
         method: "POST",
@@ -29,15 +38,25 @@ export default function GeneratePage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Generation failed");
 
-      setIsGenerating(false);
       // Redirect to the live editor for instant preview
       router.push(`/editor/${data.website._id}`);
     } catch (err) {
       console.error(err);
+      setError(err.message || "Something went wrong. Please try again.");
       setIsGenerating(false);
-      alert(err.message || "Something went wrong.");
     }
   };
+
+  // Show spinner while auth is initializing
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-[#0a0f1e] flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <>
@@ -68,11 +87,22 @@ export default function GeneratePage() {
               <div className="absolute inset-0 z-50 bg-[#0f172a]/80 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center">
                 <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4 shadow-[0_0_15px_rgba(59,130,246,0.5)]"></div>
                 <h3 className="text-xl font-bold text-white mb-2 animate-pulse">Crafting your website...</h3>
-                <p className="text-slate-400 text-sm">Generating layouts and compiling assets</p>
+                <p className="text-slate-400 text-sm">AI is generating layouts and compiling assets</p>
               </div>
             )}
 
             <div className="space-y-8">
+              {/* Error Message */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-sm font-medium"
+                >
+                  ⚠️ {error}
+                </motion.div>
+              )}
+
               {/* Prompt Area */}
               <div>
                 <label className="block text-sm font-bold text-slate-300 mb-3">Website Prompt</label>
@@ -91,7 +121,7 @@ export default function GeneratePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-3">Website Type</label>
-                  <select 
+                  <select
                     value={websiteType}
                     onChange={(e) => setWebsiteType(e.target.value)}
                     className="w-full bg-[#0a0f1e] text-slate-300 border border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none"
@@ -101,11 +131,14 @@ export default function GeneratePage() {
                     <option>E-Commerce</option>
                     <option>Blog</option>
                     <option>Dashboard</option>
+                    <option>Restaurant</option>
+                    <option>Agency</option>
+                    <option>SaaS</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-3">Color Theme</label>
-                  <select 
+                  <select
                     value={theme}
                     onChange={(e) => setTheme(e.target.value)}
                     className="w-full bg-[#0a0f1e] text-slate-300 border border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/40 appearance-none"
@@ -114,13 +147,19 @@ export default function GeneratePage() {
                     <option>Light & Minimal</option>
                     <option>Vibrant & Playful</option>
                     <option>Corporate Professional</option>
+                    <option>Neon & Cyberpunk</option>
+                    <option>Elegant & Luxury</option>
                   </select>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-slate-400">
+                <div className="text-sm text-slate-400 flex items-center gap-2">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full" />
                   Cost: <span className="text-white font-bold">1 Credit</span>
+                  {user?.credits !== undefined && (
+                    <span className="text-slate-500 ml-2">· {user.credits} remaining</span>
+                  )}
                 </div>
                 <button
                   onClick={handleGenerate}

@@ -9,6 +9,7 @@ import {
   deployWebsite,
   updateTitle,
   updateThumbnail,
+  deleteWebsite,
 } from "../controller/website.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -26,5 +27,6 @@ router.patch("/:id/code", verifyToken, updateWebsiteCode);
 router.post("/:id/deploy", verifyToken, deployWebsite);
 router.patch("/:id/title", verifyToken, updateTitle);
 router.patch("/:id/thumbnail", verifyToken, updateThumbnail);
+router.delete("/:id", verifyToken, deleteWebsite);
 
 export default router;

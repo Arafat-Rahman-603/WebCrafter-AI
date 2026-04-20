@@ -17,6 +17,8 @@ export default function DashboardPage() {
   const [totalGen, setTotalGen]             = useState(0);
   const [editingId, setEditingId]           = useState(null);
   const [editTitle, setEditTitle]           = useState("");
+  const [deletingId, setDeletingId]         = useState(null); // confirm modal
+  const [isDeleting, setIsDeleting]         = useState(false);
   const titleInputRef                       = useRef(null);
 
   useEffect(() => {
@@ -68,6 +70,30 @@ export default function DashboardPage() {
     }
   };
 
+  const confirmDelete = (siteId) => {
+    setDeletingId(siteId);
+  };
+
+  const handleDelete = async () => {
+    if (!deletingId) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`${API}/${deletingId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        setRecentWebsites((prev) => prev.filter((s) => s._id !== deletingId));
+        setTotalGen((t) => t - 1);
+      }
+    } catch (err) {
+      console.error("Delete failed:", err);
+    } finally {
+      setIsDeleting(false);
+      setDeletingId(null);
+    }
+  };
+
   if (!isInitialized) {
     return (
       <div className="min-h-screen bg-[#0a0f1e] flex items-center justify-center">
@@ -90,6 +116,49 @@ export default function DashboardPage() {
   return (
     <>
       <Navber />
+
+      {/* ── Delete Confirmation Modal ── */}
+      <AnimatePresence>
+        {deletingId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#0f172a] border border-white/10 rounded-2xl p-8 max-w-sm w-full shadow-2xl"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-white text-center mb-2">Delete Website?</h3>
+              <p className="text-slate-400 text-sm text-center mb-6">This action cannot be undone. The website will be permanently deleted.</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeletingId(null)}
+                  className="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-semibold text-sm transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="flex-1 py-2.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 font-semibold text-sm transition-all disabled:opacity-50"
+                >
+                  {isDeleting ? "Deleting..." : "Delete"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="min-h-screen bg-[#0a0f1e] pt-12 pb-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
         {/* Decorative blobs */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/8 blur-[140px] rounded-full pointer-events-none" />
@@ -130,7 +199,7 @@ export default function DashboardPage() {
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08 * (idx + 1) }}
-                className={`relative overflow-hidden bg-[#0f172a]/60 backdrop-blur-xl border border-white/8 rounded-2xl p-5 hover:border-${stat.color}-500/30 transition-colors`}
+                className="relative overflow-hidden bg-[#0f172a]/60 backdrop-blur-xl border border-white/8 rounded-2xl p-5 transition-colors"
               >
                 <div className={`absolute top-0 left-0 w-1 h-full bg-${stat.color}-500 rounded-l-sm`} />
                 <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest mb-2">{stat.label}</p>
@@ -200,6 +269,16 @@ export default function DashboardPage() {
                           Live
                         </span>
                       )}
+                      {/* Delete button — shown on hover */}
+                      <button
+                        onClick={() => confirmDelete(site._id)}
+                        title="Delete website"
+                        className="absolute top-2.5 left-2.5 opacity-0 group-hover:opacity-100 transition-opacity w-7 h-7 rounded-lg bg-black/60 hover:bg-red-500/80 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
                     </div>
 
                     {/* Card body */}
