@@ -15,13 +15,13 @@ const GEMINI_KEYS = [
   process.env.GEMINI_API_KEY_8,
   process.env.GEMINI_API_KEY_9,
   process.env.GEMINI_API_KEY_10,
-].filter(Boolean); // remove undefined entries
+].filter(Boolean);
 
 const MODEL_NAME = "gemini-2.5-flash";
 
 let currentKeyIndex = 0;
 
-// ── Core Gemini Caller with Key Rotation 
+// ── Core Gemini Caller with Key Rotation ─────────────────────────────────────
 const callGemini = async (prompt) => {
   if (GEMINI_KEYS.length === 0) {
     throw new Error("No Gemini API keys configured in .env");
@@ -43,24 +43,30 @@ const callGemini = async (prompt) => {
       return text;
     } catch (error) {
       const msg = error?.message || "";
+      const status = error?.status;
 
-      // Rotate key on quota / rate-limit errors
-      const isQuotaError =
+      // Rotate key on quota, rate-limit, OR service unavailable errors
+      const shouldRotate =
+        status === 429 ||
+        status === 503 ||
         msg.includes("429") ||
+        msg.includes("503") ||
         msg.includes("quota") ||
         msg.includes("RESOURCE_EXHAUSTED") ||
-        msg.includes("rate limit");
+        msg.includes("rate limit") ||
+        msg.includes("Service Unavailable") ||
+        msg.includes("high demand");
 
-      if (isQuotaError) {
+      if (shouldRotate) {
         console.warn(
-          `[Gemini] Key #${currentKeyIndex} quota exceeded — rotating to next key`
+          `[Gemini] Key #${currentKeyIndex} failed (${status || msg.slice(0, 60)}) — rotating to next key`
         );
         currentKeyIndex = (currentKeyIndex + 1) % GEMINI_KEYS.length;
         attempts++;
         continue;
       }
 
-      // Non-quota error — throw immediately
+      // Non-retryable error — throw immediately
       throw error;
     }
   }
