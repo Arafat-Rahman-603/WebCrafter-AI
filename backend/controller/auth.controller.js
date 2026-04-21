@@ -21,12 +21,10 @@ export const signup = async (req, res) => {
 
     const emailExists = await User.findOne({ email });
     if (emailExists) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "User already exists with this email",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "User already exists with this email",
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -80,12 +78,10 @@ export const verifyEmail = async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Invalid or expired verification code",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
     }
 
     user.isVerified = true;
@@ -109,12 +105,10 @@ export const verifyEmail = async (req, res) => {
     });
   } catch (error) {
     console.error("Verify email error:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error during email verification",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Server error during email verification",
+    });
   }
 };
 
@@ -144,12 +138,10 @@ export const login = async (req, res) => {
     }
 
     if (!user.isVerified) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Please verify your email to log in",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Please verify your email to log in",
+      });
     }
 
     generateTokenAndSetCookie(res, user._id);
@@ -210,25 +202,22 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // In production CLIENT_URL should be in .env
-    const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
+    const clientUrl =
+      process.env.CLIENT_URL || "https://webcrafter-ai.vercel.app";
     const resetUrl = `${clientUrl}/reset-password/${resetToken}`;
 
     await sendPasswordResetEmail(user.email, resetUrl);
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Password reset link sent to your email",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Password reset link sent to your email",
+    });
   } catch (error) {
     console.error("Forgot password error:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error during password reset request",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Server error during password reset request",
+    });
   }
 };
 
@@ -260,12 +249,10 @@ export const resetPassword = async (req, res) => {
     user.resetPasswordExpiresAt = undefined;
     await user.save();
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Password reset successfully. You can now log in.",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully. You can now log in.",
+    });
   } catch (error) {
     console.error("Reset password error:", error);
     return res

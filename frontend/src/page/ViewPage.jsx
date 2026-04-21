@@ -15,7 +15,9 @@ export default function ViewPage({ params }) {
   useEffect(() => {
     const fetchSite = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/website/public/${slug}`);
+        const res = await fetch(
+          `https://webcrafter-ai-server.vercel.app/api/website/public/${slug}`,
+        );
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Not found");
         setHtml(data.website.letestCode);
@@ -33,7 +35,9 @@ export default function ViewPage({ params }) {
     return (
       <div className="min-h-screen bg-[#0a0f1e] flex flex-col items-center justify-center gap-4 font-sans">
         <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-        <p className="text-slate-400 text-sm animate-pulse">Loading your website...</p>
+        <p className="text-slate-400 text-sm animate-pulse">
+          Loading your website...
+        </p>
       </div>
     );
   }
@@ -47,14 +51,25 @@ export default function ViewPage({ params }) {
           className="text-center max-w-md"
         >
           <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <svg
+              className="w-10 h-10 text-red-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white mb-2">Site Not Found</h1>
           <p className="text-slate-400 text-sm mb-6">
             This website is either not deployed or the link is incorrect.
-            <br />{error}
+            <br />
+            {error}
           </p>
           <Link
             href="/"

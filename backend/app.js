@@ -13,12 +13,16 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "https://webcrafter-ai.vercel.app",
     credentials: true,
   }),
 );
 app.use(cookieParser());
 app.use(express.json());
+
+app.use("/", (req, res) => {
+    res.json({ message: "I love You Noor,Ummmmmmmmmmmmmmmmahhhhhhh" });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const AUTH_URL = "http://localhost:4000/api/auth";
-const USER_URL = "http://localhost:4000/api/user";
+const AUTH_URL = "https://webcrafter-ai-server.vercel.app/api/auth";
+const USER_URL = "https://webcrafter-ai-server.vercel.app/api/user";
 
 export const signupUser = createAsyncThunk(
   "auth/signup",
