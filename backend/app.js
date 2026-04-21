@@ -15,6 +15,8 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL || "https://webcrafter-ai.vercel.app",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 app.use(cookieParser());
