@@ -2,6 +2,7 @@
 
 import React from "react";
 import Navber from "@/componentes/Navber";
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 
 const plans = [
@@ -16,6 +17,7 @@ const plans = [
       "Community Support",
     ],
     highlight: false,
+    status:false,
     buttonText: "Start for Free",
   },
   {
@@ -31,6 +33,7 @@ const plans = [
       "Priority Email Support",
     ],
     highlight: true,
+    status:true,
     buttonText: "Get Pro",
   },
   {
@@ -46,11 +49,20 @@ const plans = [
       "White-label options",
     ],
     highlight: false,
+    status:false,
     buttonText: "Contact Sales",
   },
 ];
 
 export default function PricingPage() {
+
+  const router = useRouter();
+    const handleSubscription = (plan) => {
+        if(plan == "Enterprise"){
+            router.push("/contact")
+        }
+    };
+    
   return (
     <>
       <Navber />
@@ -129,11 +141,14 @@ export default function PricingPage() {
                   </ul>
 
                   <button
-                    className={`w-full py-4 px-6 rounded-xl font-semibold cursor-pointer transition-all duration-300 ${
+                   onClick={()=>handleSubscription(plan.name)}
+                    disabled ={plan.status}
+                    className={`w-full py-4 px-6 rounded-xl font-semibold transition-all duration-300 ${
                       plan.highlight
                         ? "bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white shadow-lg shadow-blue-500/25 active:scale-95"
                         : "bg-white/5 hover:bg-white/10 text-white border border-white/10 active:scale-95"
-                    }`}
+                    }
+                    ${plan.status ? "bg-gray-500 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     {plan.buttonText}
                   </button>

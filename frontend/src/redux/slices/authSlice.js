@@ -1,10 +1,10 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 const AUTH_URL = "http://localhost:4000/api/auth";
 const USER_URL = "http://localhost:4000/api/user";
 
 export const signupUser = createAsyncThunk(
-  'auth/signup',
+  "auth/signup",
   async ({ name, email, password }, thunkAPI) => {
     try {
       const res = await fetch(`${AUTH_URL}/signup`, {
@@ -14,16 +14,17 @@ export const signupUser = createAsyncThunk(
         credentials: "include",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.error || "Signup failed");
+      if (!res.ok)
+        throw new Error(data.message || data.error || "Signup failed");
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const loginUser = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async ({ email, password }, thunkAPI) => {
     try {
       const res = await fetch(`${AUTH_URL}/login`, {
@@ -33,16 +34,17 @@ export const loginUser = createAsyncThunk(
         credentials: "include",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.error || "Login failed");
+      if (!res.ok)
+        throw new Error(data.message || data.error || "Login failed");
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const verifyEmailUser = createAsyncThunk(
-  'auth/verifyEmail',
+  "auth/verifyEmail",
   async ({ email, code }, thunkAPI) => {
     try {
       const res = await fetch(`${AUTH_URL}/verify-email`, {
@@ -52,16 +54,17 @@ export const verifyEmailUser = createAsyncThunk(
         credentials: "include",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.error || "Verification failed");
+      if (!res.ok)
+        throw new Error(data.message || data.error || "Verification failed");
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const forgotPasswordUser = createAsyncThunk(
-  'auth/forgotPassword',
+  "auth/forgotPassword",
   async ({ email }, thunkAPI) => {
     try {
       const res = await fetch(`${AUTH_URL}/forgot-password`, {
@@ -71,16 +74,17 @@ export const forgotPasswordUser = createAsyncThunk(
         credentials: "include",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.error || "Request failed");
+      if (!res.ok)
+        throw new Error(data.message || data.error || "Request failed");
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const resetPasswordUser = createAsyncThunk(
-  'auth/resetPassword',
+  "auth/resetPassword",
   async ({ token, newPassword }, thunkAPI) => {
     try {
       const res = await fetch(`${AUTH_URL}/reset-password/${token}`, {
@@ -90,16 +94,17 @@ export const resetPasswordUser = createAsyncThunk(
         credentials: "include",
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || data.error || "Reset failed");
+      if (!res.ok)
+        throw new Error(data.message || data.error || "Reset failed");
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const checkAuthUser = createAsyncThunk(
-  'auth/checkAuth',
+  "auth/checkAuth",
   async (_, thunkAPI) => {
     try {
       const res = await fetch(`${AUTH_URL}/check-auth`, {
@@ -112,12 +117,12 @@ export const checkAuthUser = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 // ── Async logout — clears cookie on backend too ───────────────────────────────
 export const logoutUser = createAsyncThunk(
-  'auth/logout',
+  "auth/logout",
   async (_, thunkAPI) => {
     try {
       await fetch(`${AUTH_URL}/logout`, {
@@ -127,11 +132,11 @@ export const logoutUser = createAsyncThunk(
     } catch {
       // Even if the network call fails, we still clear local state
     }
-  }
+  },
 );
 
 export const updateProfileUserInfo = createAsyncThunk(
-  'auth/updateProfile',
+  "auth/updateProfile",
   async ({ name, bio }, thunkAPI) => {
     try {
       const res = await fetch(`${USER_URL}/update`, {
@@ -146,11 +151,11 @@ export const updateProfileUserInfo = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 export const uploadAvatarUserInfo = createAsyncThunk(
-  'auth/uploadAvatar',
+  "auth/uploadAvatar",
   async (formData, thunkAPI) => {
     try {
       const res = await fetch(`${USER_URL}/upload-avatar`, {
@@ -164,11 +169,11 @@ export const uploadAvatarUserInfo = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
-  }
+  },
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: {
     user: null,
     emailForVerification: null,
@@ -299,6 +304,7 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, setEmailForVerification, logout } = authSlice.actions;
+export const { clearError, setEmailForVerification, logout } =
+  authSlice.actions;
 
 export default authSlice.reducer;
