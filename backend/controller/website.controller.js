@@ -28,6 +28,12 @@ export const generateWebsite = async (req, res) => {
       return res.status(403).json({ success: false, message: "Insufficient credits" });
     }
     
+    const userWebsitesCount = await Website.countDocuments({ user: userId });
+
+    if (userWebsitesCount >= 3 && user.plan !== "Enterprise" || user.plan !== "Pro") {
+      return res.status(403).json({ success: false, message: "Maximum number of websites reached" });
+    }
+
 
     const generatedHtml = await generateWebsiteCode(prompt, theme, type);
 
