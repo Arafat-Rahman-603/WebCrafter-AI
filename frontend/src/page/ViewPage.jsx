@@ -16,7 +16,7 @@ export default function ViewPage({ params }) {
     const fetchSite = async () => {
       try {
         const res = await fetch(
-          `https://webcrafter-ai-server.vercel.app/api/website/public/${slug}`,
+          `https://webcrafter-ai-server.onrender.com/api/website/public/${slug}`,
         );
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Not found");

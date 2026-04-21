@@ -30,7 +30,7 @@ export default function GeneratePage() {
 
     try {
       const res = await fetch(
-        "https://webcrafter-ai-server.vercel.app/api/website/generate",
+        "https://webcrafter-ai-server.onrender.com/api/website/generate",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
