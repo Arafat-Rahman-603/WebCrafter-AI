@@ -128,12 +128,12 @@ export default function GeneratePage() {
                   >
                     <option>Landing Page</option>
                     <option>Portfolio</option>
-                    <option>E-Commerce</option>
+                    <option disabled>E-Commerce</option>
                     <option>Blog</option>
                     <option>Dashboard</option>
                     <option>Restaurant</option>
                     <option>Agency</option>
-                    <option>SaaS</option>
+                    <option disabled>SaaS</option>
                   </select>
                 </div>
                 <div>

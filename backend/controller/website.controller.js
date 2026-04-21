@@ -27,6 +27,7 @@ export const generateWebsite = async (req, res) => {
     if (user.credits !== undefined && user.credits < 1) {
       return res.status(403).json({ success: false, message: "Insufficient credits" });
     }
+    
 
     const generatedHtml = await generateWebsiteCode(prompt, theme, type);
 
