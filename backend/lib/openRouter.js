@@ -100,7 +100,7 @@ Requirements:
 - Must include <html>, <head>, and <body>
 - No duplicate tags
 - Use javascript for add functionalites
-- use images from unsplash
+- use images from unsplash https://unsplash.com
 
 Return ONLY raw HTML code. No markdown code blocks, no explanation, no comments outside HTML.
 
