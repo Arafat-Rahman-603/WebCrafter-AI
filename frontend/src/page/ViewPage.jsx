@@ -15,8 +15,9 @@ export default function ViewPage({ params }) {
   useEffect(() => {
     const fetchSite = async () => {
       try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://webcrafter-ai-server.onrender.com";
         const res = await fetch(
-          `https://webcrafter-ai-server.onrender.com/api/website/public/${slug}`,
+          `${API_URL}/api/website/public/${slug}`,
         );
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || "Not found");

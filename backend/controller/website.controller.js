@@ -34,7 +34,6 @@ export const generateWebsite = async (req, res) => {
     //   return res.status(403).json({ success: false, message: "Maximum number of websites reached" });
     // }
 
-we
     const generatedHtml = await generateWebsiteCode(prompt, theme, type);
 
     const slug =

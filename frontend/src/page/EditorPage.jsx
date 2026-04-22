@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const API = "https://webcrafter-ai-server.onrender.com/api/website";
+const API = `${process.env.NEXT_PUBLIC_API_URL || "https://webcrafter-ai-server.onrender.com"}/api/website`;
 
 const SUGGESTIONS = [
   "Make the navbar sticky with a shadow",

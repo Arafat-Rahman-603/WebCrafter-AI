@@ -29,8 +29,9 @@ export default function GeneratePage() {
     setError("");
 
     try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://webcrafter-ai-server.onrender.com";
       const res = await fetch(
-        "https://webcrafter-ai-server.onrender.com/api/website/generate",
+        `${API_URL}/api/website/generate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
