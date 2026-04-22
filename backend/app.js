@@ -24,7 +24,9 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-
+app.use("/", (req, res) => {
+    res.json({ message: "I love You Noor,Ummmmmmmmmmmmmmmmahhhhhhhh" });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
