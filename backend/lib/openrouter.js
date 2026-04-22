@@ -1,107 +1,129 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 dotenv.config();
 
-// ── Key Pool (rotation) ───────────────────────────────────────────────────────
-const GEMINI_KEYS = [
-  process.env.GEMINI_API_KEY,
-  process.env.GEMINI_API_KEY_1,
-  process.env.GEMINI_API_KEY_2,
-  process.env.GEMINI_API_KEY_3,
-  process.env.GEMINI_API_KEY_4,
-  process.env.GEMINI_API_KEY_5,
-  process.env.GEMINI_API_KEY_6,
-  process.env.GEMINI_API_KEY_7,
-  process.env.GEMINI_API_KEY_8,
-  process.env.GEMINI_API_KEY_9,
-  process.env.GEMINI_API_KEY_10,
-  process.env.GEMINI_API_KEY_11,
-  process.env.GEMINI_API_KEY_12,
-  process.env.GEMINI_API_KEY_13,
-  process.env.GEMINI_API_KEY_14,
-  process.env.GEMINI_API_KEY_15,
-  process.env.GEMINI_API_KEY_16,
-  process.env.GEMINI_API_KEY_17,
-  process.env.GEMINI_API_KEY_18,
-  process.env.GEMINI_API_KEY_19,
-  process.env.GEMINI_API_KEY_20,
-  process.env.GEMINI_API_KEY_21,
-  process.env.GEMINI_API_KEY_22,
-  process.env.GEMINI_API_KEY_23,
-  process.env.GEMINI_API_KEY_24,
-  process.env.GEMINI_API_KEY_25,
-  process.env.GEMINI_API_KEY_26,
-  process.env.GEMINI_API_KEY_27,
-  process.env.GEMINI_API_KEY_28,
-  process.env.GEMINI_API_KEY_29,
-  process.env.GEMINI_API_KEY_30,
-  process.env.GEMINI_API_KEY_31,
-  process.env.GEMINI_API_KEY_32,
+// ── Configuration ─────────────────────────────────────────────────────────────
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL = "inclusionai/ling-2.6-flash:free";
+const REQUEST_TIMEOUT_MS = 120_000; // 2 minutes
+const MAX_RETRIES = 3;
+const BASE_BACKOFF_MS = 2_000;
 
-].filter(Boolean);
+if (!OPENROUTER_API_KEY) {
+  console.error("[OpenRouter] ⚠ No OPENROUTER_API_KEY found in .env");
+} else {
+  console.log(`[OpenRouter] API key loaded — using model: ${MODEL}`);
+}
 
-const MODEL_NAME = "gemini-2.5-flash";
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-let currentKeyIndex = 0;
+const backoffWithJitter = (attempt) => {
+  const base = BASE_BACKOFF_MS * Math.pow(2, attempt);
+  const jitter = Math.random() * base * 0.3;
+  return Math.min(base + jitter, 15_000);
+};
 
-// ── Core Gemini Caller with Key Rotation ─────────────────────────────────────
-const callGemini = async (prompt) => {
-  if (GEMINI_KEYS.length === 0) {
-    throw new Error("No Gemini API keys configured in .env");
+const isRetryableStatus = (status) =>
+  status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
+
+// ── Core OpenRouter Caller with Retry ─────────────────────────────────────────
+const callAI = async (prompt) => {
+  if (!OPENROUTER_API_KEY) {
+    throw new Error("OPENROUTER_API_KEY is not configured in .env");
   }
 
-  let attempts = 0;
+  let lastError = null;
 
-  while (attempts < GEMINI_KEYS.length) {
-    const apiKey = GEMINI_KEYS[currentKeyIndex];
-
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
     try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-      const result = await model.generateContent(prompt);
-      const text = result.response.text()?.trim();
+      const response = await fetch(OPENROUTER_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": "http://localhost:3000",
+          "X-Title": "WebCrafter AI", 
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 16000,
+        }),
+        signal: controller.signal,
+      });
 
-      if (!text) throw new Error("Empty response from Gemini");
+      clearTimeout(timeout);
+
+      // Handle HTTP-level errors
+      if (!response.ok) {
+        const errorBody = await response.text().catch(() => "");
+        const errMsg = `HTTP ${response.status}: ${errorBody.slice(0, 200)}`;
+
+        if (isRetryableStatus(response.status)) {
+          console.warn(
+            `[OpenRouter] Attempt ${attempt + 1}/${MAX_RETRIES} failed — ${errMsg}`
+          );
+          lastError = new Error(errMsg);
+          const delay = backoffWithJitter(attempt);
+          console.log(`[OpenRouter] Retrying in ${Math.round(delay)}ms…`);
+          await sleep(delay);
+          continue;
+        }
+
+        // Non-retryable HTTP error
+        throw new Error(errMsg);
+      }
+
+      const data = await response.json();
+
+      // Check for API-level errors
+      if (data.error) {
+        throw new Error(data.error.message || JSON.stringify(data.error));
+      }
+
+      const text = data.choices?.[0]?.message?.content?.trim();
+
+      if (!text) {
+        throw new Error("Empty response from OpenRouter");
+      }
+
       return text;
     } catch (error) {
-      const msg = error?.message || "";
-      const status = error?.status;
+      lastError = error;
 
-      // Rotate key on quota, rate-limit, OR service unavailable errors
-      const shouldRotate =
-        status === 429 ||
-        status === 503 ||
-        msg.includes("429") ||
-        msg.includes("503") ||
-        msg.includes("quota") ||
-        msg.includes("RESOURCE_EXHAUSTED") ||
-        msg.includes("rate limit") ||
-        msg.includes("Service Unavailable") ||
-        msg.includes("high demand");
-
-      if (shouldRotate) {
+      // Retry on abort (timeout) or network errors
+      if (
+        error.name === "AbortError" ||
+        error.code === "ECONNRESET" ||
+        error.code === "ETIMEDOUT"
+      ) {
         console.warn(
-          `[Gemini] Key #${currentKeyIndex} failed (${status || msg.slice(0, 60)}) — rotating to next key`
+          `[OpenRouter] Attempt ${attempt + 1}/${MAX_RETRIES} — ${error.message}`
         );
-        currentKeyIndex = (currentKeyIndex + 1) % GEMINI_KEYS.length;
-        attempts++;
+        const delay = backoffWithJitter(attempt);
+        await sleep(delay);
         continue;
       }
 
-      // Non-retryable error — throw immediately
+      // Non-retryable — throw immediately
       throw error;
     }
   }
 
-  throw new Error("All Gemini API keys are exhausted. Please try again later.");
+  throw new Error(
+    `OpenRouter failed after ${MAX_RETRIES} attempts. Last error: ${lastError?.message || "Unknown"}`
+  );
 };
 
 // ── Clean Markdown Fences ─────────────────────────────────────────────────────
 const cleanHTML = (code) => {
   if (!code) return "";
   return code
-    .replace(/^```(html)?\n?/i, "")
+    .replace(/^```(?:html|HTML)?\s*\n?/i, "")
     .replace(/\n?```\s*$/g, "")
     .trim();
 };
@@ -135,7 +157,7 @@ OUTPUT:
 `;
 
   try {
-    const code = await callGemini(fullPrompt);
+    const code = await callAI(fullPrompt);
     return cleanHTML(code);
   } catch (error) {
     console.error("Error generating website code:", error.message);
@@ -171,7 +193,7 @@ OUTPUT:
 `;
 
   try {
-    const code = await callGemini(fullPrompt);
+    const code = await callAI(fullPrompt);
     return cleanHTML(code);
   } catch (error) {
     console.error("Error fixing website code:", error.message);
