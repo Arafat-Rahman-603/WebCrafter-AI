@@ -10,25 +10,31 @@ import { verifyEmailUser, clearError } from "../redux/slices/authSlice";
 export default function VerifyEmail() {
   const [code, setCode] = useState("");
   const [success, setSuccess] = useState(false);
+  const [localEmail, setLocalEmail] = useState("");
   const dispatch = useDispatch();
   const { isLoading, error, emailForVerification } = useSelector((state) => state.auth);
   const router = useRouter();
 
   useEffect(() => {
     dispatch(clearError());
-    if (!emailForVerification) {
+    // Restore email from sessionStorage if Redux state was reset by a page refresh
+    const stored = sessionStorage.getItem("emailForVerification");
+    const email = emailForVerification || stored;
+    if (!email) {
       router.push("/signup");
+    } else {
+      setLocalEmail(email);
     }
   }, [dispatch, emailForVerification, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!emailForVerification) return;
+    if (!localEmail) return;
     try {
-      await dispatch(verifyEmailUser({ email: emailForVerification, code })).unwrap();
+      await dispatch(verifyEmailUser({ email: localEmail, code })).unwrap();
       setSuccess(true);
       setTimeout(() => {
-        router.push("/");
+        router.push("/dashboard");
       }, 2000);
     } catch (err) {}
   };
@@ -94,9 +100,9 @@ export default function VerifyEmail() {
           <p className="text-slate-400 text-sm text-center mb-2">
             {`We've sent a 6-digit code to`}
           </p>
-          {emailForVerification && (
+          {localEmail && (
             <p className="text-blue-400 text-sm font-semibold text-center mb-7">
-              {emailForVerification}
+              {localEmail}
             </p>
           )}
 

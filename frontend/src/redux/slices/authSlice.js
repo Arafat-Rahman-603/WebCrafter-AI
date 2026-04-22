@@ -3,6 +3,23 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const AUTH_URL = "https://webcrafter-ai-server.onrender.com/api/auth";
 const USER_URL = "https://webcrafter-ai-server.onrender.com/api/user";
 
+// ── Helper: get token from localStorage ──────────────────────────────────────
+const getToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("auth_token");
+  }
+  return null;
+};
+
+// ── Helper: build auth headers (cookie + Bearer fallback) ────────────────────
+const authHeaders = () => {
+  const token = getToken();
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  return headers;
+};
+
+// ── Signup ────────────────────────────────────────────────────────────────────
 export const signupUser = createAsyncThunk(
   "auth/signup",
   async ({ name, email, password }, thunkAPI) => {
@@ -23,6 +40,7 @@ export const signupUser = createAsyncThunk(
   },
 );
 
+// ── Login ─────────────────────────────────────────────────────────────────────
 export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ email, password }, thunkAPI) => {
@@ -36,6 +54,10 @@ export const loginUser = createAsyncThunk(
       const data = await res.json();
       if (!res.ok)
         throw new Error(data.message || data.error || "Login failed");
+      // Save token to localStorage as a fallback for cross-origin cookie issues
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token);
+      }
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -43,6 +65,7 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+// ── Verify Email ──────────────────────────────────────────────────────────────
 export const verifyEmailUser = createAsyncThunk(
   "auth/verifyEmail",
   async ({ email, code }, thunkAPI) => {
@@ -56,6 +79,14 @@ export const verifyEmailUser = createAsyncThunk(
       const data = await res.json();
       if (!res.ok)
         throw new Error(data.message || data.error || "Verification failed");
+      // Save token to localStorage so user stays logged in after verification
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token);
+      }
+      // Clear sessionStorage email after successful verification
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("emailForVerification");
+      }
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -63,6 +94,7 @@ export const verifyEmailUser = createAsyncThunk(
   },
 );
 
+// ── Forgot Password ───────────────────────────────────────────────────────────
 export const forgotPasswordUser = createAsyncThunk(
   "auth/forgotPassword",
   async ({ email }, thunkAPI) => {
@@ -83,6 +115,7 @@ export const forgotPasswordUser = createAsyncThunk(
   },
 );
 
+// ── Reset Password ────────────────────────────────────────────────────────────
 export const resetPasswordUser = createAsyncThunk(
   "auth/resetPassword",
   async ({ token, newPassword }, thunkAPI) => {
@@ -103,12 +136,15 @@ export const resetPasswordUser = createAsyncThunk(
   },
 );
 
+// ── Check Auth ────────────────────────────────────────────────────────────────
+// Sends both cookie AND Bearer token so whichever works in the environment is used
 export const checkAuthUser = createAsyncThunk(
   "auth/checkAuth",
   async (_, thunkAPI) => {
     try {
       const res = await fetch(`${AUTH_URL}/check-auth`, {
         method: "GET",
+        headers: authHeaders(),
         credentials: "include",
       });
       const data = await res.json();
@@ -120,28 +156,36 @@ export const checkAuthUser = createAsyncThunk(
   },
 );
 
-// ── Async logout — clears cookie on backend too ───────────────────────────────
+// ── Logout ────────────────────────────────────────────────────────────────────
 export const logoutUser = createAsyncThunk(
   "auth/logout",
   async (_, thunkAPI) => {
     try {
       await fetch(`${AUTH_URL}/logout`, {
         method: "POST",
+        headers: authHeaders(),
         credentials: "include",
       });
     } catch {
       // Even if the network call fails, we still clear local state
+    } finally {
+      // Always clear localStorage token on logout
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("auth_token");
+        sessionStorage.removeItem("emailForVerification");
+      }
     }
   },
 );
 
+// ── Update Profile ────────────────────────────────────────────────────────────
 export const updateProfileUserInfo = createAsyncThunk(
   "auth/updateProfile",
   async ({ name, bio }, thunkAPI) => {
     try {
       const res = await fetch(`${USER_URL}/update`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: authHeaders(),
         body: JSON.stringify({ name, bio }),
         credentials: "include",
       });
@@ -154,12 +198,17 @@ export const updateProfileUserInfo = createAsyncThunk(
   },
 );
 
+// ── Upload Avatar ─────────────────────────────────────────────────────────────
 export const uploadAvatarUserInfo = createAsyncThunk(
   "auth/uploadAvatar",
   async (formData, thunkAPI) => {
     try {
+      const token = getToken();
+      const headers = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
       const res = await fetch(`${USER_URL}/upload-avatar`, {
         method: "POST",
+        headers,
         body: formData,
         credentials: "include",
       });
@@ -172,6 +221,7 @@ export const uploadAvatarUserInfo = createAsyncThunk(
   },
 );
 
+// ── Slice ─────────────────────────────────────────────────────────────────────
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -187,10 +237,18 @@ const authSlice = createSlice({
     },
     setEmailForVerification: (state, action) => {
       state.emailForVerification = action.payload;
+      // Also persist to sessionStorage so it survives page refresh
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("emailForVerification", action.payload);
+      }
     },
     // Keep synchronous logout as fallback
     logout: (state) => {
       state.user = null;
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("auth_token");
+        sessionStorage.removeItem("emailForVerification");
+      }
     },
   },
   extraReducers: (builder) => {
@@ -202,7 +260,12 @@ const authSlice = createSlice({
       })
       .addCase(signupUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.emailForVerification = action.meta.arg.email;
+        const email = action.meta.arg.email;
+        state.emailForVerification = email;
+        // Persist to sessionStorage so /verify-email survives refresh
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("emailForVerification", email);
+        }
       })
       .addCase(signupUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -266,10 +329,11 @@ const authSlice = createSlice({
         state.isInitialized = true;
         state.user = null;
       })
-      // Logout (async — clears cookie)
+      // Logout (async — clears cookie and localStorage)
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.isLoading = false;
+        state.emailForVerification = null;
       })
       .addCase(logoutUser.rejected, (state) => {
         state.user = null;

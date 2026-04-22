@@ -91,11 +91,12 @@ export const verifyEmail = async (req, res) => {
 
     await sendWelcomeEmail(user.email, user.name);
 
-    generateTokenAndSetCookie(res, user._id);
+    const token = generateTokenAndSetCookie(res, user._id);
 
     return res.status(200).json({
       success: true,
       message: "Email verified successfully",
+      token,
       user: {
         _id: user._id,
         name: user.name,
@@ -144,11 +145,12 @@ export const login = async (req, res) => {
       });
     }
 
-    generateTokenAndSetCookie(res, user._id);
+    const token = generateTokenAndSetCookie(res, user._id);
 
     return res.status(200).json({
       success: true,
       message: "Logged in successfully",
+      token,
       user: {
         _id: user._id,
         name: user.name,
@@ -167,7 +169,13 @@ export const login = async (req, res) => {
 // Logout
 export const logout = (req, res) => {
   try {
-    res.cookie("token", "", { maxAge: 0 });
+    // Must match the same options used when setting the cookie
+    res.cookie("token", "", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 0,
+    });
     return res
       .status(200)
       .json({ success: true, message: "Logged out successfully" });
