@@ -30,11 +30,11 @@ export const generateWebsite = async (req, res) => {
     
     const userWebsitesCount = await Website.countDocuments({ user: userId });
 
-    if (userWebsitesCount >= 3 && user.plan !== "Enterprise" || user.plan !== "Pro") {
-      return res.status(403).json({ success: false, message: "Maximum number of websites reached" });
-    }
+    // if (userWebsitesCount >= 3 && user.plan !== "Enterprise" || user.plan !== "Pro") {
+    //   return res.status(403).json({ success: false, message: "Maximum number of websites reached" });
+    // }
 
-
+we
     const generatedHtml = await generateWebsiteCode(prompt, theme, type);
 
     const slug =
