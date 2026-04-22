@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const AUTH_URL = "https://webcrafter-ai-server.onrender.com/api/auth";
-const USER_URL = "https://webcrafter-ai-server.onrender.com/api/user";
+// Reads from .env.local locally (localhost:4000) or Vercel env var in production
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://webcrafter-ai-server.vercel.app";
+const AUTH_URL = `${BASE_URL}/api/auth`;
+const USER_URL = `${BASE_URL}/api/user`;
 
 // ── Helper: get token from localStorage ──────────────────────────────────────
 const getToken = () => {
