@@ -3,7 +3,7 @@
 import React from "react";
 import Navber from "@/componentes/Navber";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams,useRouter } from "next/navigation";
 
 // Hardcoded jobs mirroring the careers page
 const jobsData = {
@@ -108,6 +108,7 @@ const jobsData = {
 };
 
 export default function SingleCareerPage() {
+  const router = useRouter()
   const params = useParams();
   const slug = params?.slug;
   const job = jobsData[slug];
@@ -188,7 +189,7 @@ export default function SingleCareerPage() {
               <p className="text-slate-400 text-sm">Please include your resume and any relevant links (GitHub, portfolio, etc).</p>
             </div>
             
-            <button onClick={() => router.push('/contact') className="whitespace-nowrap px-8 py-4 text-base font-semibold text-white rounded-xl transition-all duration-300 active:scale-95 shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)]"
+            <button onClick={() => router.push('/contact')} className="whitespace-nowrap px-8 py-4 text-base font-semibold text-white rounded-xl transition-all duration-300 active:scale-95 shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)]"
               style={{ background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)" }}
             >
               Apply for this position
