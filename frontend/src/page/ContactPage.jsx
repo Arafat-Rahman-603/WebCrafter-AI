@@ -7,15 +7,46 @@ import { motion } from "motion/react";
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
   const [status, setStatus] = useState(null);
+  const [sending, setSending] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus("sending");
-    // Simulate API call
-    setTimeout(() => {
-      setStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    }, 1500);
+    setStatus(null);
+    setSending(true);
+
+    const data = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      subject: formData.subject.trim(),
+      message: formData.message.trim(),
+    };
+
+    if (!data.name || !data.email || !data.message) {
+      setStatus("⚠️ Please fill all required fields.");
+      setSending(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("https://get-mail-backend.onrender.com/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        const error = await res.json().catch(() => null);
+        setStatus(error?.error || "❌ Failed to send message.");
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("🌐 Network error. Try again later.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -90,6 +121,11 @@ export default function ContactPage() {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
+                {status && status !== "success" && (
+                  <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm text-center">
+                    {status}
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-sm text-slate-400 font-medium">Name</label>
@@ -141,14 +177,14 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  disabled={status === "sending"}
+                  disabled={sending}
                   className="w-full py-4 rounded-xl text-white font-semibold transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 flex justify-center items-center gap-2"
                   style={{
                     background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)",
                     boxShadow: "0 10px 25px -5px rgba(59, 130, 246, 0.4)",
                   }}
                 >
-                  {status === "sending" ? (
+                  {sending ? (
                     <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
                   ) : (
                     "Send Message"
