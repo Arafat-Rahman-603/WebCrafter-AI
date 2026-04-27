@@ -6,7 +6,7 @@
 
 ## ✨ Overview
 
-WebCrafter AI allows users to describe a website idea in natural language, and the system generates structured, responsive code (HTML, CSS, JavaScript) using AI.
+WebCrafter AI allows users to describe a website idea in natural language, and the system generates structured, responsive code (HTML, CSS, JavaScript,Tailwind) using AI.
 
 It is ideal for developers, beginners, and non-technical users who want to quickly create websites.
 
