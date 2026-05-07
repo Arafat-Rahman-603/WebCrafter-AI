@@ -33,10 +33,6 @@ export default function RootLayout({ children }) {
             <FooterWrapper />
           </div>
         </ReduxProvider>
-      <script
-          src="https://aether-ai-support.vercel.app/AetherAI.js"
-          data-business-id="user_3DOvzYegtE9X4o0YzrpUjAF0ymN" >
-      </script>
       </body>
     </html>
   );
