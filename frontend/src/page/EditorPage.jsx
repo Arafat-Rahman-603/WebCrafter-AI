@@ -31,6 +31,7 @@ export default function EditorPage({ params }) {
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
   const [conversation, setConversation] = useState([]);
+  const [selectedModel, setSelectedModel] = useState("arcee-ai/trinity-large-thinking:free");
   const [isFixing, setIsFixing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
@@ -70,6 +71,9 @@ export default function EditorPage({ params }) {
       setConversation(data.website.conversation || []);
       setDeployed(data.website.deploy || false);
       setDeployUrl(data.website.deployUrl || null);
+      if (data.website.model) {
+        setSelectedModel(data.website.model);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -171,7 +175,7 @@ export default function EditorPage({ params }) {
       const res = await fetch(`${API}/${id}/fix`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg }),
+        body: JSON.stringify({ message: msg, model: selectedModel }),
         credentials: "include",
       });
       const data = await res.json();
@@ -687,6 +691,20 @@ export default function EditorPage({ params }) {
                       />
                     </svg>
                   </button>
+                </div>
+
+                {/* Model Selector */}
+                <div className="px-4 py-2.5 border-b border-[#30363d] bg-[#0d1117]/40 flex items-center justify-between gap-3 shrink-0">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Model:</span>
+                  <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="bg-[#21262d] text-slate-200 border border-[#30363d] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-violet-500/50 cursor-pointer w-48 font-medium transition-all"
+                  >
+                    <option value="arcee-ai/trinity-large-thinking:free">⚡ Arcee AI (Fast)</option>
+                    <option value="baidu/cobuddy:free">🧠 Baidu Qianfan (Thinking)</option>
+                    <option value="openrouter/owl-alpha">🦉 owl-alpha (Long Context)</option>
+                  </select>
                 </div>
 
                 {/* Messages */}
