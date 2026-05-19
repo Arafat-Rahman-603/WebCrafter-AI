@@ -14,12 +14,19 @@ cloudinary.config({
 // ── Generate a brand-new website ──────────────────────────────────────────────
 export const generateWebsite = async (req, res) => {
   try {
-    const { prompt, theme, type } = req.body;
+    const { prompt, theme, type, model } = req.body;
     const userId = req.userId;
 
     if (!prompt || !theme || !type) {
       return res.status(400).json({ success: false, message: "Missing required fields" });
     }
+
+    const allowedModels = [
+      "arcee-ai/trinity-large-thinking:free",
+      "baidu/cobuddy:free",
+      "openrouter/owl-alpha"
+    ];
+    const selectedModel = allowedModels.includes(model) ? model : "arcee-ai/trinity-large-thinking:free";
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
@@ -34,7 +41,7 @@ export const generateWebsite = async (req, res) => {
     //   return res.status(403).json({ success: false, message: "Maximum number of websites reached" });
     // }
 
-    const generatedHtml = await generateWebsiteCode(prompt, theme, type);
+    const generatedHtml = await generateWebsiteCode(prompt, theme, type, selectedModel);
 
     const slug =
       prompt.slice(0, 15).replace(/\s+/g, "-").toLowerCase() + "-" + Date.now();
@@ -45,6 +52,7 @@ export const generateWebsite = async (req, res) => {
       title,
       letestCode: generatedHtml,
       slug,
+      model: selectedModel,
       conversation: [
         { role: "user",      content: prompt },
         { role: "assistant", content: "Generated initial website markup." },
@@ -113,12 +121,18 @@ export const getWebsiteBySlug = async (req, res) => {
 // ── AI Chat Fix — costs 10 credits ───────────────────────────────────────────
 export const fixWebsite = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, model } = req.body;
     const userId = req.userId;
 
     if (!message) {
       return res.status(400).json({ success: false, message: "Fix message is required" });
     }
+
+    const allowedModels = [
+      "arcee-ai/trinity-large-thinking:free",
+      "baidu/cobuddy:free",
+      "openrouter/owl-alpha"
+    ];
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
@@ -133,17 +147,23 @@ export const fixWebsite = async (req, res) => {
     const website = await Website.findOne({ _id: req.params.id, user: userId });
     if (!website) return res.status(404).json({ success: false, message: "Website not found" });
 
+    const selectedModel = allowedModels.includes(model)
+      ? model
+      : (website.model || "arcee-ai/trinity-large-thinking:free");
+
     // Call AI with history + current code + fix request
     const updatedCode = await fixWebsiteCode(
       website.conversation,
       message,
       website.letestCode,
+      selectedModel,
     );
 
     // Append messages to conversation
     website.conversation.push({ role: "user",      content: message });
     website.conversation.push({ role: "assistant", content: "Applied your requested changes." });
     website.letestCode = updatedCode;
+    website.model = selectedModel;
     await website.save();
 
     // Deduct 10 credits
