@@ -6,6 +6,33 @@ import { motion } from "motion/react";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 
+const MODELS = [
+  {
+    id: "arcee-ai/trinity-large-thinking:free",
+    name: "Arcee AI",
+    description: "Lightning-fast generation for sleek and modern layouts.",
+    badge: "Fast",
+    icon: "⚡",
+    color: "from-amber-400 to-orange-500",
+  },
+  {
+    id: "baidu/cobuddy:free",
+    name: "Baidu Qianfan",
+    description: "Deep thinking capabilities, best for logical structures.",
+    badge: "Thinking",
+    icon: "🧠",
+    color: "from-blue-400 to-indigo-500",
+  },
+  {
+    id: "openrouter/owl-alpha",
+    name: "owl-alpha",
+    description: "Processes extensive layout requirements and detailed copy.",
+    badge: "Long Context",
+    icon: "🦉",
+    color: "from-violet-400 to-fuchsia-500",
+  },
+];
+
 export default function GeneratePage() {
   const { user, isInitialized } = useSelector((state) => state.auth);
   const router = useRouter();
@@ -13,6 +40,7 @@ export default function GeneratePage() {
   const [prompt, setPrompt] = useState("");
   const [theme, setTheme] = useState("Dark & Modern");
   const [websiteType, setWebsiteType] = useState("Landing Page");
+  const [model, setModel] = useState("arcee-ai/trinity-large-thinking:free");
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState("");
 
@@ -35,7 +63,7 @@ export default function GeneratePage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt, theme, type: websiteType }),
+          body: JSON.stringify({ prompt, theme, type: websiteType, model }),
           credentials: "include",
         },
       );
@@ -133,6 +161,65 @@ export default function GeneratePage() {
                 </div>
               </div>
 
+              {/* Model Selection */}
+              <div>
+                <label className="block text-sm font-bold text-slate-300 mb-3">
+                  Select AI Model
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {MODELS.map((m) => {
+                    const isSelected = model === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => setModel(m.id)}
+                        className={`relative text-left p-5 rounded-2xl border transition-all duration-300 flex flex-col justify-between h-full group cursor-pointer ${
+                          isSelected
+                            ? "bg-slate-900/80 border-blue-500/80 shadow-[0_0_20px_rgba(59,130,246,0.15)]"
+                            : "bg-[#0a0f1e]/40 border-white/5 hover:border-white/20 hover:bg-[#0a0f1e]/80"
+                        }`}
+                      >
+                        {/* Selected Indicator Glow */}
+                        {isSelected && (
+                          <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-blue-500 to-violet-500 opacity-20 blur-sm pointer-events-none" />
+                        )}
+
+                        <div>
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="text-2xl">{m.icon}</span>
+                            <span className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-gradient-to-r ${m.color} text-white shadow-sm`}>
+                              {m.badge}
+                            </span>
+                          </div>
+                          <h4 className="text-white font-bold text-base mb-1 group-hover:text-blue-400 transition-colors">
+                            {m.name}
+                          </h4>
+                          <p className="text-slate-400 text-xs leading-relaxed">
+                            {m.description}
+                          </p>
+                        </div>
+
+                        <div className="mt-4 flex items-center justify-between w-full pt-3 border-t border-white/5">
+                          <span className="text-[10px] text-slate-500 font-mono truncate mr-2">
+                            {m.id}
+                          </span>
+                          <div className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                            isSelected ? "border-blue-500 bg-blue-500" : "border-slate-600"
+                          }`}>
+                            {isSelected && (
+                              <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-3">
@@ -210,3 +297,4 @@ export default function GeneratePage() {
     </>
   );
 }
+
