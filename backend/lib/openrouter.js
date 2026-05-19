@@ -4,7 +4,7 @@ dotenv.config();
 // ── Configuration ─────────────────────────────────────────────────────────────
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free";
+const MODEL = "arcee-ai/trinity-large-thinking:free";
 const REQUEST_TIMEOUT_MS = 120_000; // 2 minutes
 const MAX_RETRIES = 3;
 const BASE_BACKOFF_MS = 2_000;
