@@ -42,6 +42,10 @@ const websiteSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    model: {
+      type: String,
+      default: "arcee-ai/trinity-large-thinking:free",
+    },
   },
   { timestamps: true },
 );
