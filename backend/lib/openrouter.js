@@ -4,7 +4,7 @@ dotenv.config();
 // ── Configuration ─────────────────────────────────────────────────────────────
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "arcee-ai/trinity-large-thinking:free";
+const DEFAULT_MODEL = "arcee-ai/trinity-large-thinking:free";
 const REQUEST_TIMEOUT_MS = 120_000; // 2 minutes
 const MAX_RETRIES = 3;
 const BASE_BACKOFF_MS = 2_000;
@@ -12,7 +12,7 @@ const BASE_BACKOFF_MS = 2_000;
 if (!OPENROUTER_API_KEY) {
   console.error("[OpenRouter] ⚠ No OPENROUTER_API_KEY found in .env");
 } else {
-  console.log(`[OpenRouter] API key loaded — using model: ${MODEL}`);
+  console.log(`[OpenRouter] API key loaded — default model: ${DEFAULT_MODEL}`);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -25,10 +25,14 @@ const backoffWithJitter = (attempt) => {
 };
 
 const isRetryableStatus = (status) =>
-  status === 429 || status === 500 || status === 502 || status === 503 || status === 504;
+  status === 429 ||
+  status === 500 ||
+  status === 502 ||
+  status === 503 ||
+  status === 504;
 
 // ── Core OpenRouter Caller with Retry ─────────────────────────────────────────
-const callAI = async (prompt) => {
+const callAI = async (prompt, modelName = DEFAULT_MODEL) => {
   if (!OPENROUTER_API_KEY) {
     throw new Error("OPENROUTER_API_KEY is not configured in .env");
   }
@@ -46,10 +50,10 @@ const callAI = async (prompt) => {
           Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
           "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "WebCrafter AI", 
+          "X-Title": "WebCrafter AI",
         },
         body: JSON.stringify({
-          model: MODEL,
+          model: modelName,
           messages: [{ role: "user", content: prompt }],
           max_tokens: 16000,
         }),
@@ -65,7 +69,7 @@ const callAI = async (prompt) => {
 
         if (isRetryableStatus(response.status)) {
           console.warn(
-            `[OpenRouter] Attempt ${attempt + 1}/${MAX_RETRIES} failed — ${errMsg}`
+            `[OpenRouter] Attempt ${attempt + 1}/${MAX_RETRIES} failed — ${errMsg}`,
           );
           lastError = new Error(errMsg);
           const delay = backoffWithJitter(attempt);
@@ -102,7 +106,7 @@ const callAI = async (prompt) => {
         error.code === "ETIMEDOUT"
       ) {
         console.warn(
-          `[OpenRouter] Attempt ${attempt + 1}/${MAX_RETRIES} — ${error.message}`
+          `[OpenRouter] Attempt ${attempt + 1}/${MAX_RETRIES} — ${error.message}`,
         );
         const delay = backoffWithJitter(attempt);
         await sleep(delay);
@@ -115,7 +119,7 @@ const callAI = async (prompt) => {
   }
 
   throw new Error(
-    `OpenRouter failed after ${MAX_RETRIES} attempts. Last error: ${lastError?.message || "Unknown"}`
+    `OpenRouter failed after ${MAX_RETRIES} attempts. Last error: ${lastError?.message || "Unknown"}`,
   );
 };
 
@@ -129,7 +133,7 @@ const cleanHTML = (code) => {
 };
 
 // ── Generate Website ──────────────────────────────────────────────────────────
-export const generateWebsiteCode = async (prompt, theme, type) => {
+export const generateWebsiteCode = async (prompt, theme, type, modelName) => {
   const fullPrompt = `
 You are an expert frontend web developer specializing in HTML and Tailwind CSS.
 
@@ -157,7 +161,7 @@ OUTPUT:
 `;
 
   try {
-    const code = await callAI(fullPrompt);
+    const code = await callAI(fullPrompt, modelName);
     return cleanHTML(code);
   } catch (error) {
     console.error("Error generating website code:", error.message);
@@ -166,7 +170,12 @@ OUTPUT:
 };
 
 // ── Fix / Update Website ──────────────────────────────────────────────────────
-export const fixWebsiteCode = async (conversation, fixRequest, currentCode) => {
+export const fixWebsiteCode = async (
+  conversation,
+  fixRequest,
+  currentCode,
+  modelName,
+) => {
   const historyText = conversation
     .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
     .join("\n");
@@ -193,7 +202,7 @@ OUTPUT:
 `;
 
   try {
-    const code = await callAI(fullPrompt);
+    const code = await callAI(fullPrompt, modelName);
     return cleanHTML(code);
   } catch (error) {
     console.error("Error fixing website code:", error.message);
