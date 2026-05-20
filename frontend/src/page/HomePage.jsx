@@ -1,3 +1,4 @@
+"use client"
 import Navber from "@/componentes/Navber";
 import Hero from "@/componentes/Hero";
 import { usePathname } from "next/navigation";
