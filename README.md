@@ -25,7 +25,7 @@ It is ideal for developers, beginners, and non-technical users who want to quick
 - MongoDB
 
 ### Integrations
-- Google Gemini AI
+- Openrouter Api
 - Stripe (Payments)
 - Cloudinary (Image Hosting)
 
