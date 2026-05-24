@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 
 import authRoutes from "./route/auth.route.js";
+import emailRoutes from "./route/email.route.js";
 import userRoutes from "./route/user.route.js";
 import websiteRoutes from "./route/website.route.js";
 
@@ -36,7 +37,7 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "2mb" }));
 
 // Health check
 app.get("/", (req, res) => {
@@ -44,6 +45,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/email", emailRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/website", websiteRoutes);
 
