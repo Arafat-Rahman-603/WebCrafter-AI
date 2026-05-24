@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { signupUser, clearError } from "../redux/slices/authSlice";
+import GoogleAuthButton from "@/componentes/GoogleAuthButton";
+import { googleAuthUser, clearError } from "../redux/slices/authSlice";
 
 export default function SignUp() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const { isLoading, error, isInitialized, user } = useSelector((state) => state.auth);
   const router = useRouter();
@@ -25,13 +23,12 @@ export default function SignUp() {
     dispatch(clearError());
   }, [dispatch]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleGoogleAuth = useCallback(async (credential) => {
     try {
-      await dispatch(signupUser({ name, email, password })).unwrap();
-      router.push("/verify-email");
-    } catch (err) {}
-  };
+      await dispatch(googleAuthUser({ credential })).unwrap();
+      router.push("/dashboard");
+    } catch {}
+  }, [dispatch, router]);
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0f1e]">
@@ -78,8 +75,8 @@ export default function SignUp() {
             </span>
           </div>
 
-          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent text-center mb-1">Create an account</h1>
-          <p className="text-slate-400 text-sm text-center mb-8">Start your 14-day free trial. No credit card required.</p>
+          <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent text-center mb-1">Create your account</h1>
+          <p className="text-slate-400 text-sm text-center mb-8">Continue with Google to start using WebCrafter AI.</p>
 
           {error && (
             <motion.div
@@ -91,79 +88,28 @@ export default function SignUp() {
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5" htmlFor="name">
-                Full Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all"
-                placeholder="John Doe"
-                required
+          <div className="space-y-5">
+            <div className="flex justify-center">
+              <GoogleAuthButton
+                onCredential={handleGoogleAuth}
+                text="signup_with"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5" htmlFor="email">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all"
-                placeholder="name@company.com"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5" htmlFor="password">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all"
-                placeholder="Create a strong password"
-                required
-                autoComplete="new-password"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex justify-center items-center gap-2 mt-2 cursor-pointer"
-              style={{
-                background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)",
-                boxShadow: "0 4px 20px rgba(59,130,246,0.3)",
-              }}
-            >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating account...
-                </>
-              ) : (
-                "Create account"
-              )}
-            </button>
-          </form>
+            {isLoading && (
+              <div className="flex items-center justify-center gap-2 text-sm text-slate-300">
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Creating your account...
+              </div>
+            )}
+          </div>
 
           {/* Feature pills */}
           <div className="mt-6 flex flex-wrap gap-2 justify-center">
-            {["AI code generation", "Deploy in one click"].map((f) => (
+            {["AI code generation", "Deploy in one click", "Google sign in"].map((f) => (
               <span
                 key={f}
                 className="px-3 py-1 rounded-full text-xs font-medium text-slate-400 border border-white/10 bg-white/5"
@@ -184,3 +130,4 @@ export default function SignUp() {
     </div>
   );
 }
+
