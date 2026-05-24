@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser, clearError } from "../redux/slices/authSlice";
+import GoogleAuthButton from "@/componentes/GoogleAuthButton";
+import { googleAuthUser, clearError } from "../redux/slices/authSlice";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const { isLoading, error, isInitialized, user } = useSelector((state) => state.auth);
   const router = useRouter();
@@ -24,18 +23,12 @@ export default function Login() {
     dispatch(clearError());
   }, [dispatch]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleGoogleAuth = useCallback(async (credential) => {
     try {
-      await dispatch(loginUser({ email, password })).unwrap();
+      await dispatch(googleAuthUser({ credential })).unwrap();
       router.push("/dashboard");
-    } catch (err) {
-      // err is the rejected payload (the error message string)
-      if (err === "Please verify your email to log in") {
-        router.push("/verify-email");
-      }
-    }
-  };
+    } catch {}
+  }, [dispatch, router]);
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a0f1e]">
@@ -83,7 +76,7 @@ export default function Login() {
           </div>
 
           <h1 className="text-xl font-bold text-center mb-1 bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">Welcome back</h1>
-          <p className="text-slate-400 text-sm text-center mb-8">Sign in to your account to continue</p>
+          <p className="text-slate-400 text-sm text-center mb-8">Sign in with Google to continue to your dashboard</p>
 
           {error && (
             <motion.div
@@ -95,73 +88,28 @@ export default function Login() {
             </motion.div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5" htmlFor="email">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all"
-                placeholder="name@company.com"
-                required
+          <div className="space-y-5">
+            <div className="flex justify-center">
+              <GoogleAuthButton
+                onCredential={handleGoogleAuth}
+                text="signin_with"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-1.5" htmlFor="password">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500/50 transition-all"
-                placeholder="••••••••"
-                required
-              />
-            </div>
+            {isLoading && (
+              <div className="flex items-center justify-center gap-2 text-sm text-slate-300">
+                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing you in...
+              </div>
+            )}
 
-            <div className="flex items-center justify-between py-1">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  id="remember-me"
-                  type="checkbox"
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 accent-blue-500 cursor-pointer"
-                />
-                <span className="text-sm text-slate-400">Remember me</span>
-              </label>
-              <Link href="/forgot-password" className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">
-                Forgot password?
-              </Link>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex justify-center items-center gap-2 mt-2 cursor-pointer"
-              style={{
-                background: "linear-gradient(135deg, #3b82f6 0%, #6d28d9 100%)",
-                boxShadow: "0 4px 20px rgba(59,130,246,0.3)",
-              }}
-            >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Signing in...
-                </>
-              ) : (
-                "Sign in"
-              )}
-            </button>
-          </form>
+            <p className="text-center text-sm text-slate-500">
+              Google is the only sign-in method for this app now.
+            </p>
+          </div>
 
           <p className="mt-7 text-center text-sm text-slate-500">
             {`Don't have an account?`}{" "}
