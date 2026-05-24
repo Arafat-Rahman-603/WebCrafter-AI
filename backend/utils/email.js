@@ -10,15 +10,16 @@ const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
   secure: true,
+  family: 4, // Force IPv4 — fixes ENETUNREACH on Render
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
 
   // Prevent timeout issues on Render
-  connectionTimeout: 30000,
+  connectionTimeout: 60000,
   greetingTimeout: 30000,
-  socketTimeout: 30000,
+  socketTimeout: 60000,
 
   tls: {
     rejectUnauthorized: false,
@@ -37,10 +38,7 @@ transporter.verify((error, success) => {
 // ==========================
 // SEND VERIFICATION EMAIL
 // ==========================
-export const sendVerificationEmail = async (
-  email,
-  verificationCode
-) => {
+export const sendVerificationEmail = async (email, verificationCode) => {
   try {
     const mailOptions = {
       from: `"WebCrafter AI" <${process.env.SMTP_USER}>`,
@@ -105,9 +103,7 @@ export const sendVerificationEmail = async (
     };
 
     const info = await transporter.sendMail(mailOptions);
-
     console.log("Verification email sent:", info.messageId);
-
     return info;
   } catch (error) {
     console.error("Error sending verification email:", error);
@@ -182,22 +178,18 @@ export const sendWelcomeEmail = async (email, name) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-
     console.log("Welcome email sent:", info.messageId);
-
     return info;
   } catch (error) {
     console.error("Error sending welcome email:", error);
+    throw new Error("Could not send welcome email");
   }
 };
 
 // ==========================
 // PASSWORD RESET EMAIL
 // ==========================
-export const sendPasswordResetEmail = async (
-  email,
-  resetUrl
-) => {
+export const sendPasswordResetEmail = async (email, resetUrl) => {
   try {
     const mailOptions = {
       from: `"WebCrafter AI" <${process.env.SMTP_USER}>`,
@@ -215,8 +207,13 @@ export const sendPasswordResetEmail = async (
             </div>
 
             <div style="padding:40px 30px;">
+              <h2 style="color:white;">
+                Password Reset Request
+              </h2>
+
               <p style="color:#94a3b8; line-height:1.7;">
-                Click the button below to reset your password.
+                We received a request to reset your WebCrafter AI password.
+                Click the button below to set a new password.
               </p>
 
               <div style="margin-top:30px;">
@@ -235,6 +232,10 @@ export const sendPasswordResetEmail = async (
                   Reset Password
                 </a>
               </div>
+
+              <p style="color:#64748b; font-size:13px; margin-top:30px;">
+                This link will expire in 1 hour. If you did not request a password reset, please ignore this email.
+              </p>
             </div>
 
             <div style="
@@ -253,9 +254,7 @@ export const sendPasswordResetEmail = async (
     };
 
     const info = await transporter.sendMail(mailOptions);
-
     console.log("Password reset email sent:", info.messageId);
-
     return info;
   } catch (error) {
     console.error("Error sending password reset email:", error);
