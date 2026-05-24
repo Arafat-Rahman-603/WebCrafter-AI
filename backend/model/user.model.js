@@ -13,26 +13,19 @@ const userSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    password: {
+    googleId: {
       type: String,
-      required: true,
-      minlength: 6,
+      unique: true,
+      sparse: true,
+    },
+    authProvider: {
+      type: String,
+      enum: ["google"],
+      default: "google",
     },
     isVerified: {
       type: Boolean,
-      default: false,
-    },
-    verificationCode: {
-      type: String,
-    },
-    verificationCodeExpiresAt: {
-      type: Date,
-    },
-    resetPasswordToken: {
-      type: String,
-    },
-    resetPasswordExpiresAt: {
-      type: Date,
+      default: true,
     },
     credits: {
       type: Number,
@@ -61,3 +54,4 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema);
 
 export default User;
+
