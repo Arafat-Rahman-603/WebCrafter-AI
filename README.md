@@ -14,17 +14,17 @@ It is ideal for developers, beginners, and non-technical users who want to quick
 
 ## 🛠️ Tech Stack
 
-### Frontend
+### Frontend:
 - Next.js (React)
 - Tailwind CSS
 - Redux
 
-### Backend
+### Backend:
 - Node.js
 - Express.js
 - MongoDB
 
-### Integrations
+### Integrations:
 - Openrouter Api
 - Stripe (Payments)
 - Cloudinary (Image Hosting)
