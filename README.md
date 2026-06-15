@@ -1,6 +1,6 @@
 # 🚀 WebCrafter AI
 
-**WebCrafter AI** is  a full-stack AI-powered web application that automatically    generates complete, modern websites from simple user prompts. It combines advanced AI with a powerful tech stack to help users build websites faster and more efficiently.
+**WebCrafter AI** is  a full-stack AI-powered web application that automatically  generates complete, modern websites from simple user prompts. It combines advanced AI with a powerful tech stack to help users build websites faster and more efficiently.
 
 ---
 
